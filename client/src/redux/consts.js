@@ -1,0 +1,6 @@
+export const GET_COUNTRIES = 'GET_COUNTRIES'
+export const GET_COUNTRY = 'GET_COUNTRY'
+export const GET_IDCOUNTRY = 'GET_IDCOUNTRY'
+export const GET_NAME_COUNTRY = 'GET_NAME_IDCOUNTRY'
+export const GET_COUNTRY_FILTERS = 'GET_COUNTRY_FILTERS'
+export const LINK = 'https://dbcountries.herokuapp.com'
