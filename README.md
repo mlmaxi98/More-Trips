@@ -13,7 +13,6 @@ Hacer un ```npm install``` desde la carpeta Client y en API. Tener una base de d
 Y en API crear un ```.env``` con los siguientes datos:
 ```
 HOST = http://localhost:3000
-
 ``` 
 ## Imagenes
 1) [Home](https://i.ibb.co/NrKRRht/Countries-APP-images.png)
