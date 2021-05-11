@@ -1,4 +1,4 @@
-# Countries App
+# More Trips!
 
 Es una aplicación para buscar países, ordenarlos por Nombre / Población,  y filtrarlos tanto por Continente como por tipos de Actividades, las cuales puedes crear como notas sobre futuras actividades por realizar en uno o varios países.
 
