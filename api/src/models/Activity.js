@@ -4,16 +4,16 @@ const { DataTypes: S } = require('sequelize');
 module.exports = (sequelize) => {
     // defino el modelo
     sequelize.define('activity', {
-        Nombre: {
+        name: {
             type: S.STRING
         },
-        Dificultad: {
+        difficult: {
             type: S.INTEGER
         },
-        Duracion: {
+        duration: {
             type: S.INTEGER
         },
-        Temporada: {
+        season: {
             type: S.ENUM('Verano', 'Otoño', 'Invierno', 'Primavera')
         },
     }, { timestamps: false });

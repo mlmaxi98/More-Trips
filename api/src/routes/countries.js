@@ -1,70 +1,98 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const axios = require('axios');
 const { Country, Activity } = require('../db.js');
-const { Op } = require('sequelize');
-const LinkAll = 'https://restcountries.eu/rest/v2/all'
+const { Op } = require('sequelize')
 
-router.get('/:idPais', async (req, res) => {
-    var { idPais } = req.params
+const urlPaises = 'https://restcountries.com/v3.1/all'
+const addCountry = async (country) => {
+    const { cca3, name, flags, region, capital, subregion, area, population } = country
+    await Country.create({
+        id: cca3,
+        name: name.common,
+        flag: flags.svg,
+        region: region,
+        capital: capital && capital[0] || 'Desconocido',
+        subregion: subregion || 'Desconocido',
+        area: area,
+        population: population,
+    })
+}
 
-    idPais ? res.status(200).json(
-        await Country.findOne({
-            where: {
-                id: idPais,
-            }
-            ,
-            include: [Activity]
-        }))
-        : res.status(404).send('No ingresaste ID')
-})
-
-//!GET para buscar por Name, o sin Name/ID
 router.get('/', async (req, res) => {
-    var { name } = req.query;
+    const { name } = req.query;
     if (name) {
         try {
-            return res.status(200).json(
-                await Country.findAll({
-                    where: { Nombre: { [Op.iLike]: `%${name}%` } }
-                    ,
-                    include: [Activity]
-                })
-            )
+            return res
+                .status(200)
+                .json(
+                    await Country.findAll({
+                        where: {
+                            name: { [Op.iLike]: `%${name}%` }
+                        },
+                        include: [Activity]
+                    })
+                )
         }
         catch {
-            res.status(404).send('Error buscando por name')
+            return res
+                .status(404)
+                .send('Error buscando por name')
         }
     }
+
     else {
+
         try {
             const cant = await Country.count();
             if (cant === 0) {
-                const Paises = await axios.get(LinkAll)
-                Paises.data.forEach(async (pais) => {
-                    await Country.findOrCreate({
-                        where: {
-                            id: pais.alpha3Code,
-                            Nombre: pais.name,
-                            Bandera: pais.flag,
-                            Continente: pais.region,
-                            Capital: pais.capital,
-                            Subregion: pais.subregion,
-                            Area: pais.area,
-                            Poblacion: pais.population,
-                        }
-                    })
-                })
-                res.status(201).json(
+                const { data } = await axios(urlPaises)
+                const countries = [...data.slice(0, 50)]
+                const countries2 = [...data.slice(50, 100)]
+                const countries3 = [...data.slice(100, 200)]
+                const countries4 = [...data.slice(200, data.length)]
+
+                countries.forEach(addCountry)
+                countries2.forEach(addCountry)
+                countries3.forEach(addCountry)
+                countries4.forEach(addCountry)
+                return res.status(201).json(allCountries)
+            }
+
+            return res
+                .status(200)
+                .json(
                     await Country.findAll({ include: [Activity] })
                 )
-            }
-            else res.status(200).json(
-                await Country.findAll({ include: [Activity] })
-            )
         }
-        catch (e) { res.status(404).send('Error buscando todos los paises') }
+        catch (e) {
+            return res
+                .status(404)
+                .send('Error buscando todos los paises: ')
+        }
     }
 })
+
+router.get('/:idCountry', async (req, res) => {
+    const { idCountry } = req.params
+
+    if (idCountry) {
+        return res
+            .status(200)
+            .json(
+                await Country.findOne({
+                    where: {
+                        id: idCountry,
+                    },
+                    include: [Activity]
+                }))
+    }
+    else return res
+        .status(404)
+        .send('No ingresaste ID')
+})
+
+
+
 
 module.exports = router

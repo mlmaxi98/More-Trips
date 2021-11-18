@@ -1,4 +1,4 @@
-const { DataTypes:S } = require('sequelize');
+const { DataTypes: S } = require('sequelize');
 // Exportamos una funcion que define el modelo
 // Luego le injectamos la conexion a sequelize.
 module.exports = (sequelize) => {
@@ -9,29 +9,29 @@ module.exports = (sequelize) => {
       allowNull: false,
       primaryKey: true
     },
-    Nombre: {
+    name: {
       type: S.STRING,
       allowNull: false,
     },
-    Bandera: {
+    flag: {
       type: S.STRING,
       allowNull: false,
     },
-    Continente: {
+    region: {
       type: S.STRING,
       allowNull: false,
     },
-    Capital: {
+    capital: {
       type: S.STRING,
       allowNull: false,
     },
-    Subregion: {
+    subregion: {
       type: S.STRING,
     },
-    Area: {
-      type: S.INTEGER,
+    area: {
+      type: S.DECIMAL,
     },
-    Poblacion: {
+    population: {
       type: S.INTEGER,
     },
   }, { timestamps: false });
