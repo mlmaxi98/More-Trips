@@ -2,7 +2,7 @@ const { Router } = require('express');
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
 const countries = require('./countries')
-const activity = require('./activity')
+const activity = require('./activities')
 
 const app = Router();
 
@@ -13,7 +13,7 @@ const app = Router();
 app.use('/countries', countries)
 
 //Para acceder a las rutas de Activity
-app.use('/activity', activity)
+app.use('/activities', activity)
 
 
 module.exports = app;

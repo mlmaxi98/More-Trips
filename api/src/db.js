@@ -2,7 +2,6 @@ require('dotenv').config();
 const { Sequelize } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
-console.log(process.env)
 const URL = 'postgres://gmwcsvkgsyibdq:7e9e8a10c2ffa6a8ee82dcb5e0e8ee93de59de9aaf66b411693f00c0b291daf7@ec2-52-21-153-207.compute-1.amazonaws.com:5432/dckg33ukvmbb5s'
 let sequelize = new Sequelize(URL, {
   dialect: "postgres",

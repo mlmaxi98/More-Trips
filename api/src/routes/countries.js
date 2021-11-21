@@ -5,22 +5,10 @@ const { Country, Activity } = require('../db.js');
 const { Op } = require('sequelize')
 
 const urlPaises = 'https://restcountries.com/v3.1/all'
-const addCountry = async (country) => {
-    const { cca3, name, flags, region, capital, subregion, area, population } = country
-    await Country.create({
-        id: cca3,
-        name: name.common,
-        flag: flags.svg,
-        region: region,
-        capital: capital && capital[0] || 'Desconocido',
-        subregion: subregion || 'Desconocido',
-        area: area,
-        population: population,
-    })
-}
 
-router.get('/', async (req, res) => {
-    const { name } = req.query;
+
+router.get('/', async ({ query }, res) => {
+    const { name } = query;
     if (name) {
         try {
             return res
@@ -73,8 +61,8 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.get('/:idCountry', async (req, res) => {
-    const { idCountry } = req.params
+router.get('/:idCountry', async ({ params }, res) => {
+    const { idCountry } = params
 
     if (idCountry) {
         return res
@@ -92,7 +80,17 @@ router.get('/:idCountry', async (req, res) => {
         .send('No ingresaste ID')
 })
 
-
-
+const addCountry = async ({ cca3, name, flags, region, capital, subregion, area, population }) => {
+    await Country.create({
+        id: cca3,
+        name: name.common,
+        flag: flags.svg,
+        region: region,
+        capital: capital && capital[0] || 'Desconocido',
+        subregion: subregion || 'Desconocido',
+        area: area,
+        population: population,
+    })
+}
 
 module.exports = router
