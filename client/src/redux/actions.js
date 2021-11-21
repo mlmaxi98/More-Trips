@@ -2,16 +2,16 @@ import { GET_COUNTRIES, GET_IDCOUNTRY, GET_COUNTRY, GET_NAME_COUNTRY, LINK } fro
 import axios from 'axios'
 export const getCountries = () => {
     return async (dispatch) => {
-        const request = await axios.get(`${LINK}/countries`)
+        const { data } = await axios.get(`${LINK}/countries`)
         dispatch({
-            type: GET_COUNTRIES, payload: request.data.map(pais => {
+            type: GET_COUNTRIES, payload: data.map(country => {
                 return {
-                    name: pais.Nombre,
-                    flag: pais.Bandera,
-                    region: pais.Continente,
-                    alpha3Code: pais.id,
-                    activities: pais.activities,
-                    population: pais.Poblacion
+                    name: country.name,
+                    flag: country.flag,
+                    region: country.region,
+                    alpha3Code: country.id,
+                    activities: country.activities,
+                    population: country.population,
                 }
             })
         })
