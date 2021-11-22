@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { HomeDiv } from './StyledHome'
-import { Ordenamiento } from './Ordenamiento'
+import { Ordenamiento } from '../../utils/ordering'
 import Loading from '../Loading/Loading'
 import Card from './Card/Card'
-import { Filtros } from './Filtros'
+import { Filtros } from '../../utils/filters'
 export const Home = () => {
 
     const countries = useSelector(state => state.countries)

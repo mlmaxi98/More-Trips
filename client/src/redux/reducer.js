@@ -1,4 +1,4 @@
-import { AZ } from '../components/Home/Ordenamiento'
+import { AZ } from '../utils/ordering'
 import axios from 'axios'
 
 //Consts
@@ -67,21 +67,19 @@ export const getCountries = () => async (dispatch, getState) => {
     dispatch({
         type: GET_COUNTRIES,
     })
-
     try {
         const { data } = await axios.get(`${url}/countries`)
         dispatch({
             type: GET_COUNTRIES_SUCCESS,
             payload: data
         })
-    } catch ({ response }) {
+    } catch (err) {
         dispatch({
             type: GET_COUNTRIES_ERROR,
-            payload: response.mensaje
+            payload: err.response.message
         })
     }
 }
-
 
 export const getIdCountries = () => {
     return async (dispatch) => {
@@ -115,6 +113,6 @@ export const getNameCountry = (name) => {
 
 export const postCountry = (body, countries) => {
     return async () => {
-        await axios.post(`${url}/activity`, { ...body, countries })
+        await axios.post(`${url}/activities`, { ...body, countries })
     }
 }
