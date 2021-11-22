@@ -1,30 +1,120 @@
 import { AZ } from '../components/Home/Ordenamiento'
-import { GET_COUNTRIES, GET_IDCOUNTRY, GET_COUNTRY, GET_NAME_COUNTRY, /* GET_COUNTRY_FILTERS */ } from './consts'
+import axios from 'axios'
+
+//Consts
+const url = 'https://dbcountries.herokuapp.com'
+
+const GET_COUNTRIES = 'GET_COUNTRIES'
+const GET_COUNTRIES_SUCCESS = 'GET_COUNTRIES_SUCCESS'
+const GET_COUNTRIES_ERROR = 'GET_COUNTRIES_ERROR'
+
+const GET_COUNTRY = 'GET_COUNTRY'
+const GET_IDCOUNTRY = 'GET_IDCOUNTRY'
+const GET_NAME_COUNTRY = 'GET_NAME_IDCOUNTRY'
+
 
 const initialState = {
+    loading: false,
     countries: [],
     country: {},
-    idCountries: [],
 }
 
 export function rootReducer(state = initialState, action) {
 
     switch (action.type) {
+
         case GET_COUNTRIES:
-            return { ...state, countries: action.payload.sort(() => Math.random() - 0.5) }
+            return { ...state, loading: true }
+
+        case GET_COUNTRIES_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                countries: action.payload.sort(() => Math.random() - 0.5)
+            }
+
+        case GET_COUNTRIES_ERROR:
+            return { ...state, loading: false, error: action.payload }
 
         case GET_NAME_COUNTRY:
-            return { ...state, countries: action.payload.sort(() => Math.random() - 0.5) }
+            return {
+                ...state,
+                countries: action.payload.sort(() => Math.random() - 0.5)
+            }
 
         case GET_IDCOUNTRY:
             return {
-                ...state, idCountries: state.countries.map(pais => { return { id: pais.alpha3Code, name: pais.name, } }).sort(AZ)
+                ...state,
+                loading: false,
+                countries: state.countries.sort(AZ)
             }
 
         case GET_COUNTRY:
-            return { ...state, country: action.payload }
+            return {
+                ...state,
+                country: action.payload
+            }
 
         default:
             return state
+    }
+}
+
+
+//Actions
+export const getCountries = () => async (dispatch, getState) => {
+
+    dispatch({
+        type: GET_COUNTRIES,
+    })
+
+    try {
+        const { data } = await axios.get(`${url}/countries`)
+        dispatch({
+            type: GET_COUNTRIES_SUCCESS,
+            payload: data
+        })
+    } catch ({ response }) {
+        dispatch({
+            type: GET_COUNTRIES_ERROR,
+            payload: response.mensaje
+        })
+    }
+}
+
+
+export const getIdCountries = () => {
+    return async (dispatch) => {
+        const { data } = await axios.get(`${url}/countries`)
+        dispatch({
+            type: GET_IDCOUNTRY,
+            payload: data
+        })
+    }
+}
+
+export const getCountry = (id) => {
+    return async (dispatch) => {
+        const { data } = await axios.get(`${url}/countries/${id}`)
+        dispatch({
+            type: GET_COUNTRY,
+            payload: data
+        })
+    }
+}
+
+export const getNameCountry = (name) => {
+    return async (dispatch) => {
+        const { data } = await axios.get(`${url}/countries?name=${name}`)
+        dispatch({
+            type: GET_NAME_COUNTRY,
+            payload: data
+        })
+    }
+}
+
+export const postCountry = (body, countries) => {
+    return async () => {
+        await axios.post(`${url}/activity`, { ...body, countries })
     }
 }

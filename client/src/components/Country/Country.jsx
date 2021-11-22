@@ -6,30 +6,33 @@ import { getCountry } from '../../redux/actions'
 import { CountryDiv } from './StyledCountry'
 import CountryDetalles from './CountryDetalles/CountryDetalles'
 import Activities from '../Activities/Activities'
-const Country = (props) => {
+import { useParams } from "react-router-dom";
+const Country = () => {
+
     const dispatch = useDispatch();
-    const [loading, setLoading] = useState(true)
-    const id = props.match.params.id;
+    const { id } = useParams();
+    const loading = useSelector(state => state.loading)
     const country = useSelector(state => state.country)
 
     useEffect(() => {
         dispatch(getCountry(id))
-        setTimeout(() => setLoading(false), 1500)
     }, [])
 
     return (
         <CountryDiv>
-            {loading ?
-                <Loading />
-                :
-                <div className='pantalla'>
-                    {country ?
-                        <>
-                            <CountryDetalles Detalles={country} />
-                            <Activities activities={country.activities} />
-                        </>
-                        : <h1>Error 404: Intentó acceder a un pais inexistente</h1>}
-                </div>
+            {
+                loading
+                    ? <Loading />
+                    : <div className='pantalla'>
+                        {
+                            Object.keys(country).length > 0
+                                ? <>
+                                    <CountryDetalles Detalles={country} />
+                                    <Activities activities={country.activities} />
+                                </>
+                                : <h1>Error 404: Intentó acceder a un pais inexistente</h1>
+                        }
+                    </div>
             }
         </CountryDiv>
     )

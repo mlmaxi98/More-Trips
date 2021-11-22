@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { HomeDiv } from './StyledHome'
 import { Ordenamiento } from './Ordenamiento'
@@ -9,7 +8,7 @@ import { Filtros } from './Filtros'
 export const Home = () => {
 
     const countries = useSelector(state => state.countries)
-    const [loading, setLoading] = useState(true)
+    const loading = useSelector(state => state.loading)
     const [filtro, setFiltro] = useState(false)
     const [search, setSearch] = useState('')
     const [name, setName] = useState('')
@@ -31,14 +30,11 @@ export const Home = () => {
         setDif('')
         setDur('')
     }
-    const handleClickInput = (e) => {
-        setPage(0);
-    }
+    const handleClickInput = () => setPage(0)
     const handleClickSearch = () => {
         handleReset()
         setSearch(name);
         setMax(countries.length)
-        //setFiltro(true);
     }
     const handleFilter = (paises, continente, orden, temporada, pagina, dificultad, duracion) => {
 
@@ -53,9 +49,8 @@ export const Home = () => {
         setPaises(filteredPaises.slice(10 * pagina, (10 * pagina) + 10))
     }
     useEffect(() => {
-        setLoading(true)
         handleReset()
-        setTimeout(() => { setLoading(false); setFiltro(true) }, 2500)
+        setTimeout(() => { setFiltro(true) }, 2500)
         return () => {
             setFiltro(false)
             setMax(24)
@@ -81,12 +76,9 @@ export const Home = () => {
 
     return (
         <HomeDiv>
-
             <>
                 <div className='menu'>
-
                     <div className='filtros'>
-
                         <div className='buscador'>
                             <input type='search' className='search' placeholder='Buscar' value={name} onChange={(e) => { setName(e.target.value) }} onClick={handleClickInput} />
                             <button className='buscar' onClick={handleClickSearch} ><i className="fas fa-search"></i></button>
@@ -156,6 +148,7 @@ export const Home = () => {
                                         </div>
                                     </div>
                                 </div>
+                                
                                 <div className='paginado' >
                                     <div className='pagination-bot'>
                                         <button className='np' onClick={prevPage}>
@@ -165,7 +158,6 @@ export const Home = () => {
                                         <button className='np' onClick={nextPage}>
                                             <i class="fas fa-arrow-right"></i>
                                         </button>
-
                                     </div>
                                 </div>
                             </div>
@@ -173,13 +165,14 @@ export const Home = () => {
                     </div>
 
                 </div>
-
-
                 <div className='cards'>
                     {
-                        loading ? <Loading name={search} />
-                            : paises.length > 0 ?
-                                paises.map(pais => <Card pais={pais} key={pais.alpha3Code} />)
+                        loading
+                            ? <Loading />
+                            : paises.length > 0
+                                ? paises.map(country => <Card
+                                    country={country}
+                                    key={country.id} />)
                                 : <span>No se encontraron resultados</span>
                     }
                 </div>
