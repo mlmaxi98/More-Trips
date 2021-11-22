@@ -7,7 +7,6 @@ import Loading from '../Loading/Loading'
 import Card from '../Home/Card/Card'
 const Crear = () => {
     const dispatch = useDispatch();
-    const idCountries = useSelector(state => state.idCountries)
     const countries = useSelector(state => state.countries)
     const [pais, setPais] = useState([])
     const [paises, setPaises] = useState([])
@@ -89,10 +88,18 @@ const Crear = () => {
 
                         <div className='Paises'>
                             <label>Paises:</label>
-                            <select className='' multiple name='pais' onChange={handlePais} required>
-                                {idCountries.length > 0 ? idCountries.map((pais, i) => {
-                                    return <option value={pais.id} key={pais.id}>{pais.name}</option>
-                                }) : <option >Cargando</option>}
+                            <select multiple name='pais' onChange={handlePais} required>
+                                {
+                                    countries.map(country => {
+                                        return (
+                                            <option
+                                                value={country.id}
+                                                key={country.id}>
+                                                {country.name}
+                                            </option>
+                                        )
+                                    })
+                                }
                             </select>
                         </div>
                         <input className='crear' type='submit' value='Crear Actividad' />
@@ -104,7 +111,12 @@ const Crear = () => {
                         <button className='crear' onClick={() => { setLoading2(!loading2) }}><i className="fas fa-sync-alt"></i></button>
                     </div>
                     <div className='countries'>
-                        {loading ? <Loading /> : paises.length > 0 ? paises.map(pais => <Card act={true} pais={pais} key={pais.alpha3Code} />) : <div className='nada'>No se han creado Actividades aún</div>}
+                        {
+                            loading ? <Loading />
+                                : paises.length > 0
+                                    ? paises.map(country => <Card act country={country} key={pais.id} />)
+                                    : <div className='nada'>No se han creado Actividades aún</div>
+                        }
                     </div>
                 </div>
             </>
