@@ -8,56 +8,81 @@ const urlPaises = 'https://restcountries.com/v3.1/all'
 
 
 router.get('/', async ({ query }, res) => {
-    const { name } = query;
-    if (name) {
-        try {
-            return res
-                .status(200)
-                .json(
-                    await Country.findAll({
-                        where: {
-                            name: { [Op.iLike]: `%${name}%` }
-                        },
-                        include: [Activity]
-                    })
-                )
+    const {
+        //Countries
+        name,
+        region,
+        //Activity
+        activity,
+        season,
+        duration,
+        difficult,
+        //Order and Pagination
+        columnOrder,
+        order,
+        size,
+        page,
+
+    } = query;
+
+    try {
+        const cant = await Country.count();
+        if (cant === 0) {
+            const { data } = await axios(urlPaises)
+            const countries = [...data.slice(0, 50)]
+            const countries2 = [...data.slice(50, 100)]
+            const countries3 = [...data.slice(100, 200)]
+            const countries4 = [...data.slice(200, data.length)]
+
+            countries.forEach(addCountry)
+            countries2.forEach(addCountry)
+            countries3.forEach(addCountry)
+            countries4.forEach(addCountry)
+            return res.status(201).json(allCountries)
         }
-        catch {
-            return res
-                .status(404)
-                .send('Error buscando por name')
-        }
+
+        return res
+            .status(200)
+            .json(
+                await Country.findAll({
+                    where: {
+                        ...(name && { name: { [Op.iLike]: `%${name}%` } }),
+                        ...(region && { region: { [Op.iLike]: `%${region}%` } }),
+                    },
+                    include: [
+                        {
+                            model: Activity,
+                            ...(
+                                (activity || season || duration || difficult)
+                                && {
+                                    where: {
+                                        ...(activity && {
+                                            name: {
+                                                [Op.iLike]: `%${activity}%`
+                                            }
+                                        }),
+                                        ...(season && { season }),
+                                        ...(duration && { duration }),
+                                        ...(difficult && { difficult }),
+                                    }
+                                })
+                        }
+                    ],
+                    ...(size && { limit: size }),
+                    ...(page && { offset: page }),
+                    order: [
+                        [
+                            columnOrder || 'name',
+                            order || 'ASC',
+                        ],
+                    ],
+                })
+            )
     }
-
-    else {
-
-        try {
-            const cant = await Country.count();
-            if (cant === 0) {
-                const { data } = await axios(urlPaises)
-                const countries = [...data.slice(0, 50)]
-                const countries2 = [...data.slice(50, 100)]
-                const countries3 = [...data.slice(100, 200)]
-                const countries4 = [...data.slice(200, data.length)]
-
-                countries.forEach(addCountry)
-                countries2.forEach(addCountry)
-                countries3.forEach(addCountry)
-                countries4.forEach(addCountry)
-                return res.status(201).json(allCountries)
-            }
-
-            return res
-                .status(200)
-                .json(
-                    await Country.findAll({ include: [Activity] })
-                )
-        }
-        catch (e) {
-            return res
-                .status(404)
-                .send('Error buscando todos los paises: ')
-        }
+    catch (e) {
+        return res
+            .status(404)
+            .send('Error buscando todos los paises: ')
     }
 })
 
