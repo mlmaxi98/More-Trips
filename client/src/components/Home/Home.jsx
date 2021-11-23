@@ -7,8 +7,10 @@ import Card from './Card/Card'
 import { Filtros } from '../../utils/filters'
 export const Home = () => {
 
+    //store
     const countries = useSelector(state => state.countries)
     const loading = useSelector(state => state.loading)
+
     const [filtro, setFiltro] = useState(false)
     const [search, setSearch] = useState('')
     const [name, setName] = useState('')
@@ -19,7 +21,6 @@ export const Home = () => {
     const [order, setOrder] = useState('')
     const [page, setPage] = useState(0);
     const [max, setMax] = useState(24);
-    const [paises, setPaises] = useState([])
     const nextPage = () => { page < max && setPage(page + 1) }
     const prevPage = () => { page > 0 && setPage(page - 1) }
     const handleReset = () => {
@@ -30,24 +31,14 @@ export const Home = () => {
         setDif('')
         setDur('')
     }
+
     const handleClickInput = () => setPage(0)
     const handleClickSearch = () => {
         handleReset()
         setSearch(name);
         setMax(countries.length)
     }
-    const handleFilter = (paises, continente, orden, temporada, pagina, dificultad, duracion) => {
 
-        let filteredPaises = paises;
-
-        filteredPaises = Filtros(filteredPaises, continente, temporada, dificultad, duracion)
-
-        filteredPaises = Ordenamiento(filteredPaises, orden)
-
-        filteredPaises.length > 10 ? setMax(Math.ceil(filteredPaises.length / 10) - 1) : setMax(0)
-
-        setPaises(filteredPaises.slice(10 * pagina, (10 * pagina) + 10))
-    }
     useEffect(() => {
         handleReset()
         setTimeout(() => { setFiltro(true) }, 2500)
@@ -57,21 +48,6 @@ export const Home = () => {
             handleReset()
         }
     }, [search])
-
-    useEffect(() => {
-        if (!loading) {
-            setFiltro(true)
-            setPaises(countries.slice(10 * (page), (10 * page) + 10))
-            setPage(0)
-            setMax(Math.ceil(countries.length / 10) - 1)
-        }
-    }, [loading])
-
-
-    useEffect(() => {
-        handleFilter(countries, continent, order, temp, page, dif, dur)
-    }, [continent, order, temp, page, dif, dur])
-
 
 
     return (
@@ -83,8 +59,9 @@ export const Home = () => {
                             <input type='search' className='search' placeholder='Buscar' value={name} onChange={(e) => { setName(e.target.value) }} onClick={handleClickInput} />
                             <button className='buscar' onClick={handleClickSearch} ><i className="fas fa-search"></i></button>
                         </div>
-                        {filtro &&
-                            <div className='filter'>
+                        {
+                            filtro
+                            && <div className='filter'>
                                 <div className='ContAct'>
 
                                     <div className='continente'>
@@ -100,6 +77,7 @@ export const Home = () => {
                                                 <option value='Polar'>Polar</option>
                                             </select>
                                         </div>
+
                                         <div className='order'>
                                             <label>Ordenar por: </label>
                                             <select value={order} onChange={(e) => { setOrder(e.target.value) }} onClick={(e) => { setPage(0) }}>
@@ -111,7 +89,9 @@ export const Home = () => {
                                             </select>
                                         </div>
                                     </div>
+
                                     <div className='Actividades'>
+
                                         <div className='temp'>
                                             <label>Temporada:</label>
                                             <select value={temp} onChange={(e) => { setTemp(e.target.value) }} onClick={(e) => { setPage(0) }}>
@@ -122,7 +102,9 @@ export const Home = () => {
                                                 <option value='Primavera'>Primavera</option>
                                             </select>
                                         </div>
+
                                         <div className='actFilters'>
+
                                             <div className='Duracion'>
                                                 <label>Duración</label>
                                                 <select value={dur} onChange={(e) => { setDur(e.target.value) }} onClick={(e) => { setPage(0) }}>
@@ -134,6 +116,7 @@ export const Home = () => {
                                                     <option value='5'>5 o + </option>
                                                 </select>
                                             </div>
+
                                             <div className='Dificultad'>
                                                 <label>Dificultad</label>
                                                 <select value={dif} onChange={(e) => { setDif(e.target.value) }} onClick={(e) => { setPage(0) }}>
@@ -145,10 +128,11 @@ export const Home = () => {
                                                     <option value='5'> 5 </option>
                                                 </select>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div className='paginado' >
                                     <div className='pagination-bot'>
                                         <button className='np' onClick={prevPage}>
@@ -156,21 +140,21 @@ export const Home = () => {
                                         </button>
                                         <input className='count' value={page + 1} disabled />
                                         <button className='np' onClick={nextPage}>
-                                            <i class="fas fa-arrow-right"></i>
+                                            <i class="fas fa-arrow-right" />
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         }
                     </div>
-
                 </div>
+
                 <div className='cards'>
                     {
                         loading
                             ? <Loading />
-                            : paises.length > 0
-                                ? paises.map(country => <Card
+                            : countries.length > 0
+                                ? countries.map(country => <Card
                                     country={country}
                                     key={country.id} />)
                                 : <span>No se encontraron resultados</span>
