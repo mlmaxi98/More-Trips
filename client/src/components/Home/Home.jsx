@@ -11,63 +11,81 @@ export const Home = () => {
     const countries = useSelector(state => state.countries)
     const loading = useSelector(state => state.loading)
 
-    const [filtro, setFiltro] = useState(false)
-    const [search, setSearch] = useState('')
-    const [name, setName] = useState('')
-    const [continent, setContinent] = useState('')
-    const [temp, setTemp] = useState('')
-    const [dur, setDur] = useState('')
-    const [dif, setDif] = useState('')
-    const [order, setOrder] = useState('')
-    const [page, setPage] = useState(0);
-    const [max, setMax] = useState(24);
-    const nextPage = () => { page < max && setPage(page + 1) }
-    const prevPage = () => { page > 0 && setPage(page - 1) }
-    const handleReset = () => {
-        setContinent('')
-        setOrder('')
-        setTemp('')
-        setPage(0)
-        setDif('')
-        setDur('')
+
+
+
+    const [form, setForm] = useState({
+        name: '',
+        region: '',
+        difficult: '',
+        duration: 0,
+        season: '',
+        page: 0,
+        order: 'ASC',
+    })
+
+    const handleForm = (event) => {
+        setForm({
+            ...form,
+            [event.target.name]: event.target.value
+        })
     }
 
-    const handleClickInput = () => setPage(0)
-    const handleClickSearch = () => {
-        handleReset()
-        setSearch(name);
-        setMax(countries.length)
+    const nextPage = () => {
+        if (form.page < 25) setForm({
+            ...form,
+            page: form.page + 1,
+        })
     }
+
+    const prevPage = () => {
+        if (form.page > 0) setForm({
+            ...form,
+            page: form.page - 1,
+        })
+    }
+
+    const handleReset = () => { }
 
     useEffect(() => {
+
         handleReset()
-        setTimeout(() => { setFiltro(true) }, 2500)
+
         return () => {
-            setFiltro(false)
-            setMax(24)
             handleReset()
         }
-    }, [search])
+    }, [form])
 
 
     return (
         <HomeDiv>
             <>
                 <div className='menu'>
+
                     <div className='filtros'>
+
                         <div className='buscador'>
-                            <input type='search' className='search' placeholder='Buscar' value={name} onChange={(e) => { setName(e.target.value) }} onClick={handleClickInput} />
-                            <button className='buscar' onClick={handleClickSearch} ><i className="fas fa-search"></i></button>
+
+                            <input
+                                type='search'
+                                className='search'
+                                placeholder='Buscar'
+                                name='name'
+                                onChange={handleForm} />
+                            <button className='buscar' onClick={handleForm}>
+                                <i className="fas fa-search" />
+                            </button>
+
                         </div>
                         {
-                            filtro
+                            countries.length > 0
                             && <div className='filter'>
                                 <div className='ContAct'>
 
                                     <div className='continente'>
                                         <div className='filCont'>
                                             <label>Continente:</label>
-                                            <select value={continent} onChange={(e) => { setContinent(e.target.value) }} onClick={(e) => { setPage(0) }}>
+                                            <select name='region' onChange={handleForm}>
                                                 <option value=''></option>
                                                 <option value='Africa'>Africa</option>
                                                 <option value='Asia'>Asia</option>
@@ -80,7 +98,7 @@ export const Home = () => {
 
                                         <div className='order'>
                                             <label>Ordenar por: </label>
-                                            <select value={order} onChange={(e) => { setOrder(e.target.value) }} onClick={(e) => { setPage(0) }}>
+                                            <select name='order' onChange={handleForm}>
                                                 <option value=''></option>
                                                 <option value='AZ'>Nombre ↑</option>
                                                 <option value='ZA'>Nombre ↓</option>
@@ -94,7 +112,7 @@ export const Home = () => {
 
                                         <div className='temp'>
                                             <label>Temporada:</label>
-                                            <select value={temp} onChange={(e) => { setTemp(e.target.value) }} onClick={(e) => { setPage(0) }}>
+                                            <select name='season' onChange={handleForm}>
                                                 <option value=''></option>
                                                 <option value='Verano'>Verano</option>
                                                 <option value='Invierno'>Invierno</option>
@@ -107,7 +125,7 @@ export const Home = () => {
 
                                             <div className='Duracion'>
                                                 <label>Duración</label>
-                                                <select value={dur} onChange={(e) => { setDur(e.target.value) }} onClick={(e) => { setPage(0) }}>
+                                                <select name='duration' onChange={handleForm}>
                                                     <option value=''></option>
                                                     <option value='1' >1</option>
                                                     <option value='2'>2</option>
@@ -119,7 +137,7 @@ export const Home = () => {
 
                                             <div className='Dificultad'>
                                                 <label>Dificultad</label>
-                                                <select value={dif} onChange={(e) => { setDif(e.target.value) }} onClick={(e) => { setPage(0) }}>
+                                                <select name='difficult' onChange={handleForm}>
                                                     <option value=''></option>
                                                     <option value='1'> 1 </option>
                                                     <option value='2'> 2 </option>
@@ -136,9 +154,9 @@ export const Home = () => {
                                 <div className='paginado' >
                                     <div className='pagination-bot'>
                                         <button className='np' onClick={prevPage}>
-                                            <i class="fas fa-arrow-left"></i>
+                                            <i class="fas fa-arrow-left" />
                                         </button>
-                                        <input className='count' value={page + 1} disabled />
+                                        <input className='count' value={form.page + 1} disabled />
                                         <button className='np' onClick={nextPage}>
                                             <i class="fas fa-arrow-right" />
                                         </button>
