@@ -6,17 +6,18 @@ const { Op } = require('sequelize')
 
 const urlPaises = 'https://restcountries.com/v3.1/all'
 
-
 router.get('/', async ({ query }, res) => {
     const {
         //Countries
         name,
         region,
+
         //Activity
         activity,
         season,
         duration,
         difficult,
+
         //Order and Pagination
         columnOrder,
         order,
@@ -41,43 +42,56 @@ router.get('/', async ({ query }, res) => {
             return res.status(201).json(allCountries)
         }
 
-        return res
-            .status(200)
-            .json(
-                await Country.findAll({
+        const countries = await Country.findAndCountAll({
+            ...(
+                (name || region)
+                && {
                     where: {
                         ...(name && { name: { [Op.iLike]: `%${name}%` } }),
                         ...(region && { region: { [Op.iLike]: `%${region}%` } }),
-                    },
-                    include: [
-                        {
-                            model: Activity,
-                            ...(
-                                (activity || season || duration || difficult)
-                                && {
-                                    where: {
-                                        ...(activity && {
-                                            name: {
-                                                [Op.iLike]: `%${activity}%`
-                                            }
-                                        }),
-                                        ...(season && { season }),
-                                        ...(duration && { duration }),
-                                        ...(difficult && { difficult }),
+                    }
+                }),
+            ...(size && { limit: size }),
+            ...(page && { offset: page * size }),
+            include: [
+                {
+                    model: Activity,
+                    ...(
+                        (activity
+                            || season
+                            || duration
+                            || difficult)
+                        && {
+                            where: {
+                                ...(activity && {
+                                    name: {
+                                        [Op.iLike]: `%${activity}%`
                                     }
-                                })
-                        }
-                    ],
-                    ...(size && { limit: size }),
-                    ...(page && { offset: page }),
-                    order: [
-                        [
-                            columnOrder || 'name',
-                            order || 'ASC',
-                        ],
-                    ],
-                })
-            )
+                                }),
+                                ...(season && { season }),
+                                ...(duration && { duration }),
+                                ...(difficult && { difficult }),
+                            }
+                        })
+                }
+            ],
+
+            order: [
+                [
+                    columnOrder || 'name',
+                    order || 'ASC',
+                ],
+            ],
+        })
+
+
+        return res
+            .status(200)
+            .json({
+                ...countries,
+                page: parseInt(page),
+                nextPage: Boolean(countries.count > ((parseInt(page) + 1) * size))
+            })
     }
     catch (e) {
         return res
@@ -86,23 +100,30 @@ router.get('/', async ({ query }, res) => {
     }
 })
 
-router.get('/:idCountry', async ({ params }, res) => {
-    const { idCountry } = params
+router.get('/:id', async ({ params }, res) => {
+    const { id } = params
+    try {
 
-    if (idCountry) {
+        if (id) {
+            return res
+                .status(200)
+                .json(
+                    await Country.findOne({
+                        where: {
+                            id
+                        },
+                        include: [Activity]
+                    }))
+        }
+        else return res
+            .status(404)
+            .send('No ingresaste ID')
+
+    } catch (error) {
         return res
-            .status(200)
-            .json(
-                await Country.findOne({
-                    where: {
-                        id: idCountry,
-                    },
-                    include: [Activity]
-                }))
+            .status(404)
+            .send('Hubo un error: ' + error.message)
     }
-    else return res
-        .status(404)
-        .send('No ingresaste ID')
 })
 
 const addCountry = async ({ cca3, name, flags, region, capital, subregion, area, population }) => {
