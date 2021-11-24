@@ -11,12 +11,13 @@ const Country = () => {
 
     const { id } = useParams();
     const dispatch = useDispatch();
+
     const loading = useSelector(state => state.loading)
     const country = useSelector(state => state.country)
 
     useEffect(() => {
         dispatch(getCountry(id))
-    }, [])
+    }, [dispatch, id])
 
     return (
         <CountryDiv>

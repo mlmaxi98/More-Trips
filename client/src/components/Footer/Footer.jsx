@@ -24,7 +24,7 @@ export const Footer = () => {
                 {
                     networks.map(network => {
                         return (
-                            <button>
+                            <button key={network.url}>
                                 <a href={network.url}>
                                     <i className={network.icon} />
                                 </a>

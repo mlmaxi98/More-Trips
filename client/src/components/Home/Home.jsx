@@ -8,18 +8,21 @@ export const Home = () => {
 
     const dispatch = useDispatch();
     const countries = useSelector(state => state.countries)
+    const next = useSelector(state => state.nextPage)
     const loading = useSelector(state => state.loading)
-
-    const [form, setForm] = useState({
-        name: '',
-        region: '',
-        season: '',
-        difficult: '',
-        duration: '',
+    
+    const initialForm = {
+        name: null,
+        region: null,
+        season: null,
+        difficult: null,
+        duration: null,
         page: 0,
         order: 'ASC',
-        size: 5,
-    })
+        size: 10,
+    }
+
+    const [form, setForm] = useState({ ...initialForm })
 
     const handleForm = (event) => {
         setForm({
@@ -29,9 +32,13 @@ export const Home = () => {
     }
 
     const nextPage = () => {
-        if (form.page < 25) setForm({
+        if (next) setForm({
             ...form,
             page: form.page + 1,
+        })
+        else setForm({
+            ...form,
+            page: 0,
         })
     }
 
@@ -40,18 +47,18 @@ export const Home = () => {
             ...form,
             page: form.page - 1,
         })
+        /* else setForm({
+            ...form,
+            page: 0,
+        }) */
+
     }
 
-    const handleReset = () => { }
+    const handleReset = () => setForm({ ...initialForm })
 
     useEffect(() => {
-        dispatch(
-            getCountries(form)
-        )
-        return () => {
-            handleReset()
-        }
-    }, [form])
+        dispatch(getCountries(form))
+    }, [dispatch, form])
 
 
     return (
@@ -148,11 +155,11 @@ export const Home = () => {
                                 <div className='paginado' >
                                     <div className='pagination-bot'>
                                         <button className='np' onClick={prevPage}>
-                                            <i class="fas fa-arrow-left" />
+                                            <i className="fas fa-arrow-left" />
                                         </button>
                                         <input className='count' value={form.page + 1} disabled />
                                         <button className='np' onClick={nextPage}>
-                                            <i class="fas fa-arrow-right" />
+                                            <i className="fas fa-arrow-right" />
                                         </button>
                                     </div>
                                 </div>
