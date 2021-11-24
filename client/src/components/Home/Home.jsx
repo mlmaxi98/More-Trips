@@ -1,27 +1,24 @@
 import { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { HomeDiv } from './StyledHome'
-import { Ordenamiento } from '../../utils/ordering'
 import Loading from '../Loading/Loading'
 import Card from './Card/Card'
-import { Filtros } from '../../utils/filters'
+import { getCountries } from '../../redux/reducer'
 export const Home = () => {
 
-    //store
+    const dispatch = useDispatch();
     const countries = useSelector(state => state.countries)
     const loading = useSelector(state => state.loading)
-
-
-
 
     const [form, setForm] = useState({
         name: '',
         region: '',
-        difficult: '',
-        duration: 0,
         season: '',
+        difficult: '',
+        duration: '',
         page: 0,
         order: 'ASC',
+        size: 5,
     })
 
     const handleForm = (event) => {
@@ -48,9 +45,9 @@ export const Home = () => {
     const handleReset = () => { }
 
     useEffect(() => {
-
-        handleReset()
-
+        dispatch(
+            getCountries(form)
+        )
         return () => {
             handleReset()
         }
@@ -99,11 +96,8 @@ export const Home = () => {
                                         <div className='order'>
                                             <label>Ordenar por: </label>
                                             <select name='order' onChange={handleForm}>
-                                                <option value=''></option>
-                                                <option value='AZ'>Nombre ↑</option>
-                                                <option value='ZA'>Nombre ↓</option>
-                                                <option value='MAX'>Poblacion ↑</option>
-                                                <option value='MIN'>Poblacion ↓</option>
+                                                <option value='ASC'>ASC</option>
+                                                <option value='DESC'>DESC</option>
                                             </select>
                                         </div>
                                     </div>
