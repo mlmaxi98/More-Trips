@@ -8,9 +8,11 @@ export const Home = () => {
 
     const dispatch = useDispatch();
     const countries = useSelector(state => state.countries)
-    const next = useSelector(state => state.nextPage)
+    const next = useSelector(state => state.next)
+    const prev = useSelector(state => state.prev)
     const loading = useSelector(state => state.loading)
-    
+    const pages = useSelector(state => state.pages)
+
     const initialForm = {
         name: null,
         region: null,
@@ -43,14 +45,14 @@ export const Home = () => {
     }
 
     const prevPage = () => {
-        if (form.page > 0) setForm({
+        if (prev) setForm({
             ...form,
             page: form.page - 1,
         })
-        /* else setForm({
+        else setForm({
             ...form,
-            page: 0,
-        }) */
+            page: pages,
+        })
 
     }
 

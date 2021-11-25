@@ -17,7 +17,9 @@ const initialState = {
     loading: false,
     countries: [],
     country: {},
-    nextPage: null,
+    next: null,
+    prev: null,
+    pages: 0,
 }
 
 export function rootReducer(state = initialState, action) {
@@ -31,8 +33,10 @@ export function rootReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                nextPage: action.payload.nextPage,
-                countries: action.payload.rows
+                next: action.payload.next,
+                prev: action.payload.prev,
+                countries: action.payload.rows,
+                pages: action.payload.pages,
             }
 
         case GET_COUNTRIES_ERROR:
@@ -58,8 +62,7 @@ export function rootReducer(state = initialState, action) {
 
 //Actions
 export const getCountries = (form) => async (dispatch, getState) => {
-
-    console.log('----------->', form)
+    // console.log('----------->', form)
     dispatch({
         type: GET_COUNTRIES,
     })
@@ -83,27 +86,24 @@ export const getCountries = (form) => async (dispatch, getState) => {
     }
 }
 
-export const getCountry = (id) => {
-
-    return async (dispatch) => {
-
+export const getCountry = (id) => async (dispatch) => {
+    dispatch({
+        type: GET_COUNTRY,
+    })
+    try {
+        const { data } = await axios.get(`${url}/countries/${id}`)
         dispatch({
-            type: GET_COUNTRY,
+            type: GET_COUNTRY_SUCCESS,
+            payload: data
         })
-        try {
-            const { data } = await axios.get(`${url}/countries/${id}`)
-            dispatch({
-                type: GET_COUNTRY_SUCCESS,
-                payload: data
-            })
-        } catch (err) {
-            dispatch({
-                type: GET_COUNTRY_ERROR,
-                payload: err.message
-            })
-        }
+    } catch (err) {
+        dispatch({
+            type: GET_COUNTRY_ERROR,
+            payload: err.message
+        })
     }
 }
+
 
 /* export const getNameCountry = (name) => {
     return async (dispatch) => {
