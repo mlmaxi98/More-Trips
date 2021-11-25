@@ -83,14 +83,16 @@ router.get('/', async ({ query }, res) => {
                 ],
             ],
         })
-
+        const pages = Math.ceil(countries.count / parseInt(size)) - 1
 
         return res
             .status(200)
             .json({
                 ...countries,
                 page: parseInt(page),
-                nextPage: Boolean(countries.count > ((parseInt(page) + 1) * size))
+                pages,
+                next: Boolean(pages !== parseInt(page)),
+                prev: Boolean(0 === parseInt(page)),
             })
     }
     catch (e) {
