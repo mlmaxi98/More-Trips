@@ -61,8 +61,7 @@ export function rootReducer(state = initialState, action) {
 
 
 //Actions
-export const getCountries = (form) => async (dispatch, getState) => {
-    // console.log('----------->', form)
+export const getCountries = (form) => async (dispatch) => {
     dispatch({
         type: GET_COUNTRIES,
     })
@@ -103,17 +102,6 @@ export const getCountry = (id) => async (dispatch) => {
         })
     }
 }
-
-
-/* export const getNameCountry = (name) => {
-    return async (dispatch) => {
-        const { data } = await axios.get(`${url}/countries?name=${name}`)
-        dispatch({
-            type: GET_NAME_COUNTRY,
-            payload: data
-        })
-    }
-} */
 
 export const postCountry = (body, countries) => {
     return async () => {

@@ -1,16 +1,13 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { postCountry, getCountries } from '../../redux/reducer'
 import { CrearDiv } from './StyledCrear'
-//import Loading from '../Loading/Loading'
-//import Card from '../Home/Card/Card'
-import { AZ } from '../../utils/ordering'
+
 const Crear = () => {
 
     const dispatch = useDispatch();
 
-    const countries = useSelector(state => state.countries.sort(AZ))
+    const countries = useSelector(state => state.countries.sort())
 
     const [selectCountries, setSelectCountries] = useState([])
 
@@ -52,6 +49,9 @@ const Crear = () => {
         dispatch(getCountries())
     }
 
+    useEffect(() => {
+        dispatch(getCountries())
+    }, [dispatch])
     return (
         <CrearDiv>
             <>
@@ -122,20 +122,19 @@ const Crear = () => {
 
                     </div>
                 </form>
-                {/*  <div className='creados'>
+                <div className='creados'>
                     <div className='title'>
                         <span>Paises con actividades</span>
-                        <button className='crear' onClick={() => { setLoading2(!loading2) }}><i className="fas fa-sync-alt"></i></button>
+                        <button className='crear fas fa-sync-alt' />
                     </div>
                     <div className='countries'>
-                        {
-                            loading ? <Loading />
-                                : paises.length > 0
-                                    ? paises.map(country => <Card act country={country} key={pais.id} />)
+                        {/* {
+
+                            ? paises.map(country => <Card act country={country} key={pais.id} />)
                                     : <div className='nada'>No se han creado Actividades aún</div>
-                        }
+                        } */}
                     </div>
-                </div> */}
+                </div>
             </>
         </CrearDiv>
     )
