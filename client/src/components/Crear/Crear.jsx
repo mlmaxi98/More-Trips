@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { postCountry, getCountries } from '../../redux/reducer'
 import { CrearDiv } from './StyledCrear'
-
+import Card from '../Home/Card/Card'
 const Crear = () => {
 
     const dispatch = useDispatch();
 
     const countries = useSelector(state => state.countries.sort())
+    const loading = useSelector(state => state.loading)
 
     const [selectCountries, setSelectCountries] = useState([])
 
@@ -46,7 +47,6 @@ const Crear = () => {
             postCountry(form, selectCountries)
         )
         event.target.reset();
-        dispatch(getCountries())
     }
 
     useEffect(() => {
@@ -82,7 +82,7 @@ const Crear = () => {
                         </div>
 
                         <div className='Duracion'>
-                            <label>Duracion(Semanas): </label>
+                            <label>{'Duracion (Semanas):'}</label>
                             <input
                                 className='colorInput'
                                 type='number' min="1"
@@ -125,14 +125,24 @@ const Crear = () => {
                 <div className='creados'>
                     <div className='title'>
                         <span>Paises con actividades</span>
-                        <button className='crear fas fa-sync-alt' />
+                        {/* <button className='crear fas fa-sync-alt' /> */}
                     </div>
                     <div className='countries'>
-                        {/* {
-
-                            ? paises.map(country => <Card act country={country} key={pais.id} />)
-                                    : <div className='nada'>No se han creado Actividades aún</div>
-                        } */}
+                        {
+                            !loading ?
+                                countries.length > 0
+                                    ? countries
+                                        .filter(country =>
+                                            Object.keys(country.activities).length > 0)
+                                        .map(country =>
+                                            <Card act key={country.id} country={country} />)
+                                    : <div className='nada'>
+                                        No se han creado Actividades aún
+                                    </div>
+                                : <div className='nada'>
+                                    Cargando paises con actividades...
+                                </div>
+                        }
                     </div>
                 </div>
             </>
